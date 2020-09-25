@@ -25,7 +25,10 @@ variable "num_nodes" {
 
 variable "machine_type" {
   description  = "They type of machine dictates the number of vcpus in it, see: https://cloud.google.com/compute/docs/machine-types#e2_machine_types_beta"
-  default = "e2-highmem-16" #16 vcpus
+   #e2-highmem-4
+   #e2-highmem-8
+   #e2-highmem-16" 
+  default = "e2-highmem-4" 
 }
 
 # user name for ssh key
