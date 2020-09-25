@@ -73,7 +73,7 @@ resource "google_compute_instance" "vm_instance_master" {
   }
   provisioner "remote-exec" {
     inline = [
-      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
     ]
   }
@@ -111,7 +111,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
     ]
   }
@@ -119,7 +119,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
   connection {
     type        = "ssh"
     user        = "${var.user}"
-    host        = "${google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip}"
+    host        = "${google_compute_instance.vm_instance_slaves[count.index].network_interface.0.access_config.0.nat_ip}"
     private_key = "${file(var.ssh_priv)}"
   }
 }
