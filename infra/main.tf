@@ -31,8 +31,10 @@ variable "machine_type" {
 # user name for ssh key
 variable "user" {}
 
-#path to the key file
-variable "ssh_pub" {}
+#path to the public key file
+variable "ssh_pub" {
+    default = "~/.ssh/id_rsa.pub"
+}
 
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
