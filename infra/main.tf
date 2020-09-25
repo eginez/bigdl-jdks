@@ -41,8 +41,8 @@ variable "ssh_pub" {
 
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
-  ## eg: machine_type = "f1-micro"
-  machine_type = "${var.machine_type}"
+  #machine_type = "${var.machine_type}"
+  machine_type = "f1-micro"
 
   count        = "1"
   allow_stopping_for_update = true
