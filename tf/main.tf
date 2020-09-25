@@ -21,10 +21,17 @@ variable "machine_type" {
   default = "e2-highmem-16" #16 vcpus
 }
 
+# user name for ssh key
+variable "user" {}
+
+#path to the key file
+variable "ssh_pub" {}
+
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
   machine_type = "f1-micro"
   count        = "1"
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
@@ -39,6 +46,10 @@ resource "google_compute_instance" "vm_instance_master" {
     access_config {
     }
   }
+
+   metadata = {
+    ssh-keys = "${var.user}:${file(var.ssh_pub)}"
+  }
 }
 
 resource "google_compute_instance" "vm_instance_slaves" {
@@ -49,7 +60,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = "${data.google_compute_image.bigdl_custom_image.self_link}"
     }
   }
 
@@ -59,4 +70,16 @@ resource "google_compute_instance" "vm_instance_slaves" {
     access_config {
     }
   }
+
+  metadata = {
+    ssh-keys = "${var.user}:${file(var.ssh_pub)}"
+  }
+}
+
+output "ip_master" {
+ value = google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip
+}
+
+output "ip_slaves" {
+ value = google_compute_instance.vm_instance_slaves.*.network_interface.0.access_config.0.nat_ip
 }
