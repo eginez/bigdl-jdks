@@ -39,6 +39,10 @@ variable "ssh_pub" {
     default = "~/.ssh/id_rsa.pub"
 }
 
+variable "ssh_priv" {
+    default = "~/.ssh/id_rsa"
+}
+
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
   #machine_type = "${var.machine_type}"
@@ -63,6 +67,18 @@ resource "google_compute_instance" "vm_instance_master" {
 
    metadata = {
     ssh-keys = "${var.user}:${file(var.ssh_pub)}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SHAPE_VM='${var.machine_type}' >> /tmp/shape_vm.txt",
+    ]
+  }
+  
+  connection {
+    type        = "ssh"
+    user        = "${var.user}"
+    private_key = "${file(var.ssh_priv)}"
   }
 }
 
