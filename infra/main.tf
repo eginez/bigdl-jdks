@@ -1,7 +1,14 @@
 
+## Inputs ssh public key
+## GCP project id
+## image name
+## machine type
+## number of nodes
+
 provider "google" {
  # credentials = file("CREDENTIALS_FILE.json")
- project     =  "personalprojects-279219"
+ #eg: project     =  "personal-279219"
+ project     =  ""
  region      = "europe-west4"
  zone      = "europe-west4-a"
 }
