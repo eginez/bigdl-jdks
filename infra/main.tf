@@ -78,6 +78,7 @@ resource "google_compute_instance" "vm_instance_master" {
   connection {
     type        = "ssh"
     user        = "${var.user}"
+    host        = "${google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip}"
     private_key = "${file(var.ssh_priv)}"
   }
 }
