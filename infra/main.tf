@@ -5,10 +5,13 @@
 ## machine type
 ## number of nodes
 
+variable "project_id" {
+  description = "google project id"
+}
+
 provider "google" {
  # credentials = file("CREDENTIALS_FILE.json")
- #eg: project     =  "personal-279219"
- project     =  ""
+ project     =  "${var.project_id}"
  region      = "europe-west4"
  zone      = "europe-west4-a"
 }
