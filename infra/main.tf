@@ -23,7 +23,6 @@ data "google_compute_image" "bigdl_custom_image" {
 
 variable "num_nodes" {
   description = "Number of nodes to create"
-  default     = 1
 }
 
 variable "machine_type" {
