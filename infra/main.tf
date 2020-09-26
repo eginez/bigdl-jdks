@@ -156,7 +156,7 @@ resource "google_compute_firewall" "default" {
 
  allow {
    protocol = "tcp"
-   ports    = ["8080", "8081"]
+   ports    = ["8080", "8081", "4040"]
  }
 
  source_ranges = ["0.0.0.0/0"]
