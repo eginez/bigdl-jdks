@@ -74,6 +74,7 @@ resource "google_compute_instance" "vm_instance_master" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
+      /home/am72ghiassi/bd/spark/sbin/start-master.sh
     ]
   }
   
@@ -112,6 +113,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
+       /home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077
     ]
   }
   
