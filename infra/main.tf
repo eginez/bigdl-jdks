@@ -58,6 +58,7 @@ variable "ssh_priv" {
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
   machine_type = "e2-standard-4"
+  tags = ["master-ui"]
 
   count        = "1"
   allow_stopping_for_update = true
@@ -142,6 +143,23 @@ resource "google_compute_instance" "vm_instance_slaves" {
   depends_on = [
        google_compute_instance.vm_instance_master
   ]
+}
+
+resource "google_compute_firewall" "default" {
+ name    = "master-firewall"
+ network = "default"
+
+ allow {
+   protocol = "icmp"
+ }
+
+ allow {
+   protocol = "tcp"
+   ports    = ["8080"]
+ }
+
+ source_ranges = ["0.0.0.0/0"]
+ target_tags = ["master-ui"]
 }
 
 output "ip_master_external" {
