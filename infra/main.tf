@@ -28,8 +28,11 @@ variable "num_nodes" {
 }
 
 variable "jdk_version" {
-    description = "set this to the jdk you want to use, only two options $OPENJDK_HOME or $GRAALVM_HOME"
-    default = "$OPENJDK_HOME"
+    # Only to values
+    # /usr/lib/jvm/java-8-openjdk-amd64/
+    # /usr/local/bin/graalvm-ce-java8-20.2.0/
+    description = "set this to the jdk you want to use"
+    default = "/usr/local/bin/graalvm-ce-java8-20.2.0/" 
 }
 
 variable "machine_type" {
@@ -80,10 +83,10 @@ resource "google_compute_instance" "vm_instance_master" {
   provisioner "remote-exec" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
+      "echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
+      "echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
-      "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
-      "source /home/eginez/.bashrc",
-      "env",
       "/home/am72ghiassi/bd/spark/sbin/start-master.sh"
     ]
   }
@@ -122,10 +125,10 @@ resource "google_compute_instance" "vm_instance_slaves" {
   provisioner "remote-exec" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
+      "echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
+      "echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh"
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
-      "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
-      "source /home/eginez/.bashrc",
-      "env",
       "/home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077"
     ]
   }
