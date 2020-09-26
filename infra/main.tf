@@ -4,6 +4,8 @@
 ## image name
 ## machine type
 ## number of nodes
+## username for ssh connections
+## JDK_NAME
 
 variable "project_id" {
   description = "google project id"
@@ -23,6 +25,11 @@ data "google_compute_image" "bigdl_custom_image" {
 
 variable "num_nodes" {
   description = "Number of nodes to create"
+}
+
+variable "jdk_version" {
+    description = "set this to the jdk you want to use, only two options $OPENJDK_HOME or $GRAALVM_HOME"
+    default = "$OPENJDK_HOME"
 }
 
 variable "machine_type" {
@@ -74,6 +81,8 @@ resource "google_compute_instance" "vm_instance_master" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
+      "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
+      "source /home/eginez/.bashrc"
       "/home/am72ghiassi/bd/spark/sbin/start-master.sh"
     ]
   }
@@ -113,7 +122,9 @@ resource "google_compute_instance" "vm_instance_slaves" {
     inline = [
       "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
-       "/home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077"
+      "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
+      "source /home/eginez/.bashrc"
+      "/home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077"
     ]
   }
   
