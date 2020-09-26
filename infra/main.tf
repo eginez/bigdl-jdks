@@ -58,7 +58,7 @@ variable "ssh_priv" {
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
   machine_type = "e2-standard-4"
-  tags = ["master-ui"]
+  tags = ["ui"]
 
   count        = "1"
   allow_stopping_for_update = true
@@ -104,6 +104,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
   machine_type = "${var.machine_type}"
   count        = "${var.num_nodes}"
   allow_stopping_for_update = true
+  tags = ["ui"]
 
   boot_disk {
     initialize_params {
@@ -155,11 +156,11 @@ resource "google_compute_firewall" "default" {
 
  allow {
    protocol = "tcp"
-   ports    = ["8080"]
+   ports    = ["8080", "8081"]
  }
 
  source_ranges = ["0.0.0.0/0"]
- target_tags = ["master-ui"]
+ target_tags = ["ui"]
 }
 
 output "ip_master_external" {
