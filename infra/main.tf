@@ -83,6 +83,7 @@ resource "google_compute_instance" "vm_instance_master" {
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
       "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
       "source /home/eginez/.bashrc"
+      "env"
       "/home/am72ghiassi/bd/spark/sbin/start-master.sh"
     ]
   }
@@ -124,6 +125,7 @@ resource "google_compute_instance" "vm_instance_slaves" {
       "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
       "echo export JAVA_HOME='${var.jdk_version}' >> /home/eginez/.bashrc",
       "source /home/eginez/.bashrc"
+      "env"
       "/home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077"
     ]
   }
