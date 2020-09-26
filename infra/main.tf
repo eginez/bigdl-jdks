@@ -57,8 +57,7 @@ variable "ssh_priv" {
 
 resource "google_compute_instance" "vm_instance_master" {
   name         = "master-instance"
-  #machine_type = "${var.machine_type}"
-  machine_type = "f1-micro"
+  machine_type = "e2-standard-4"
 
   count        = "1"
   allow_stopping_for_update = true
@@ -145,10 +144,19 @@ resource "google_compute_instance" "vm_instance_slaves" {
   ]
 }
 
-output "ip_master" {
+output "ip_master_external" {
  value = google_compute_instance.vm_instance_master[0].network_interface.0.access_config.0.nat_ip
 }
 
-output "ip_slaves" {
+output "ip_master_internal" {
+ value = google_compute_instance.vm_instance_master[0].network_interface.0.network_ip
+}
+
+output "ip_slaves_internal" {
+ value = google_compute_instance.vm_instance_slaves.*.network_interface.0.network_ip
+}
+
+output "ip_slaves_external" {
  value = google_compute_instance.vm_instance_slaves.*.network_interface.0.access_config.0.nat_ip
 }
+
