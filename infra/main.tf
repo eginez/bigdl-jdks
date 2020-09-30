@@ -1,4 +1,3 @@
-
 ## Inputs ssh public key
 ## GCP project id
 ## image name
