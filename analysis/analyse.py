@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 
 def main():
+    """Analysis the provided experiment results and quantify the effects of the factors"""
 
     # Parse arguments
     argument_parser = ArgumentParser()
