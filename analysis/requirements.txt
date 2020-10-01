@@ -1,7 +1,0 @@
-# Without version specifier
-numpy
-pandas
-pyDOE
-
-# With version specifier
-# None
