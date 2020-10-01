@@ -24,6 +24,8 @@ def generate_full(factors):
 def generate_frac(factors):
     """Generate a fractional factorial design with the highest resolution possible"""
 
+    # TODO: Exclude categorical factors from the fractional design.
+
     # Compute the number of factors
     n = len(factors)
 
