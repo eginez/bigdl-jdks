@@ -21,6 +21,15 @@ def generate_full(factors):
     return design
 
 
+def min_max(levels):
+    """Compute the minimum and maximum of the given levels"""
+    if not levels:
+        raise ValueError("Cannot determine minimum value of empty list")
+    if type(levels[0]) == str:
+        return 0, -1
+    return levels.index(min(levels)), levels.index(max(levels))
+
+
 def generate_frac(factors):
     """Generate a fractional factorial design with the highest resolution possible"""
 
@@ -42,8 +51,13 @@ def generate_frac(factors):
         design = ff2n(n)
 
     # Normalize the design such that it corresponds to level indices
-    levels = [len(values) for _, values in factors.items()]
-    design = np.multiply(np.divide(np.add(design, 1), 2), np.subtract(levels, 1))
+    min_indices, max_indices = zip(*[min_max(levels) for _, levels in factors.items()])
+    for i in range(len(design)):
+        for j in range(len(design[i])):
+            if design[i][j] < 0:
+                design[i][j] = min_indices[j]
+            else:
+                design[i][j] = max_indices[j]
 
     # Convert indices to integers
     design = [map(int, indices) for indices in design]
