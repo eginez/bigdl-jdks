@@ -1,28 +1,22 @@
 import json
-import numpy as np
 import pandas as pd
 
 from argparse import ArgumentParser
 from pyDOE2 import fullfact, ff2n, fracfact_by_res
 
 
-def generate_full(factors):
-    """Generate a full factorial design"""
-
-    # Compute the number of levels
-    levels = [len(values) for _, values in factors.items()]
-
-    # Perform full factorial design
-    design = fullfact(levels)
-
-    # Convert indices to integers
-    design = [map(int, indices) for indices in design]
-
-    return design
+def frac_by_max_res(factor_count, target_resolution=6):
+    """Generate fractional factorial design sign table with maximum resolution"""
+    try:
+        if target_resolution >= 3:
+            return fracfact_by_res(factor_count, target_resolution)
+        return ff2n(factor_count)
+    except ValueError:
+        return frac_by_max_res(factor_count, target_resolution - 1)
 
 
 def min_max(levels):
-    """Compute the minimum and maximum of the given levels"""
+    """Compute minimum and maximum of given levels"""
     if not levels:
         raise ValueError("Cannot determine minimum value of empty list")
     if type(levels[0]) == str:
@@ -31,26 +25,12 @@ def min_max(levels):
 
 
 def generate_frac(factors):
-    """Generate a fractional factorial design with the highest resolution possible"""
+    """Generate a fractional factorial design with maximum resolution"""
 
-    # TODO: Exclude categorical factors from the fractional design.
+    # Generate sign table
+    design = frac_by_max_res(len(factors))
 
-    # Compute the number of factors
-    n = len(factors)
-
-    # Perform fractional factorial design with the greatest possible resolution
-    design = None
-    for resolution in [6, 5, 4, 3]:
-        try:
-            design = fracfact_by_res(n, resolution)
-        except ValueError:
-            continue
-
-    # Perform full fractional if none of the target resolutions can be achieved
-    if design is None:
-        design = ff2n(n)
-
-    # Normalize the design such that it corresponds to level indices
+    # Replace signs with min and max indices
     min_indices, max_indices = zip(*[min_max(levels) for _, levels in factors.items()])
     for i in range(len(design)):
         for j in range(len(design[i])):
@@ -59,9 +39,13 @@ def generate_frac(factors):
             else:
                 design[i][j] = max_indices[j]
 
-    # Convert indices to integers
-    design = [map(int, indices) for indices in design]
+    return design
 
+
+def generate_full(factors):
+    """Generate a full factorial design"""
+    levels = [len(values) for _, values in factors.items()]
+    design = fullfact(levels)
     return design
 
 
@@ -80,12 +64,15 @@ def main():
         factors = json.load(file)
 
     # Generate design
-    if "full" in arguments.type:
-        design = generate_full(factors)
-    elif "frac" in arguments.type:
+    if "frac" in arguments.type:
         design = generate_frac(factors)
+    elif "full" in arguments.type:
+        design = generate_full(factors)
     else:
         raise ValueError(f"Invalid design type: {arguments.type}")
+
+    # Convert indices to integers
+    design = [map(int, indices) for indices in design]
 
     # Generate configurations
     configurations = []
