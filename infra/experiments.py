@@ -5,9 +5,10 @@ import csv
 import subprocess
 import os
 
-def exec_cmd(cmd, env):
-    dry-run=True
-    if dry-run:
+dry_run = True
+
+def exec_cmd(cmd, env=os.environ.copy()):
+    if dry_run:
         cmd_str = ' '.join(cmd)
         print(f'Will run command: {cmd_str} with env {env}')
     else:
@@ -51,7 +52,7 @@ def run_ml(master_ip, local_path_ml_script):
     #create a dir in well know location in master
     cmd_create_dir = ['ssh', master_ip, 'mkdir', '-p', remote_ml_dir]
 
-    exec_cmd(cmd,cmd_create_dir)
+    exec_cmd(cmd_create_dir)
     #subprocess.run(cmd_create_dir)
 
     #copy ml_script to to 
@@ -61,9 +62,9 @@ def run_ml(master_ip, local_path_ml_script):
 
     script_name=os.path.basename(local_path_ml_script)
     #run script in master
-    run_script = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}"]
+    run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}"]
     #subprocess.run(copy_cmd)
-    exec_cmd(run_script)
+    exec_cmd(run_script_cmd)
 
 
 if __name__ == '__main__':
@@ -72,8 +73,10 @@ if __name__ == '__main__':
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
+    argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
 
     arguments = argument_parser.parse_args()
+    dry_run = arguments.dryrun
     csv_file = csv.reader(open(arguments.plan))
     headers = next(csv_file, None)
     all_exp = []
