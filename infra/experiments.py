@@ -12,11 +12,10 @@ dry_run = False
 user = None
 project_id = None
 
-def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
+def exec_cmd(cmd, env=os.environ.copy(), multiplex=None, wd=os.path.abspath('.')):
     cmd_str = ' '.join(cmd)
     output = []
     outf = None
-
     if multiplex is not None:
         print(f"Will save output to  {multiplex}")
         outf = open(multiplex, 'w')
@@ -27,7 +26,7 @@ def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
     else:
         #print(f'Executing command: {cmd_str} with env {env}')
         print(f'Executing command: {cmd_str}')
-        process = subprocess.Popen(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True)
+        process = subprocess.Popen(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True, cwd=wd)
         for line in iter(process.stdout.readline, ''):
             sys.stdout.write(line)
             output.append(line)
@@ -85,7 +84,8 @@ def run_ml(outfile, master_ip, local_path_ml_script, batch):
     ##run script in master
     run_script_cmd = ["bash", local_path_ml_script, master_ip, batch]
     #subprocess.run(copy_cmd)
-    exec_cmd(run_script_cmd, multiplex=outfile)
+    ml_dir = os.path.dirname(local_path_ml_script)
+    exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
 
 def get_master_ip(out):
     for line in out:
