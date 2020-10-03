@@ -91,7 +91,7 @@ if __name__ == '__main__':
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
     argument_parser.add_argument("-u", "--user", required=True, help="user")
-    argument_parser.add_argument("-i", "--project-id", dest='project' required=True, help="the google project id")
+    argument_parser.add_argument("-i", "--project-id", dest='project', required=True, help="the google project id")
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
