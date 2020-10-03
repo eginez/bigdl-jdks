@@ -144,7 +144,7 @@ if __name__ == '__main__':
         if master_ip is None:
             print("Can not find master ip. Execute ml script manually")
             exit(0)
-        run_ml(outfile, master_ip, arguments.ml, arguments.batch)
+        run_ml(outfile, master_ip, arguments.ml, exp['batch'])
 
 
 
