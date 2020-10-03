@@ -18,6 +18,10 @@ def run_terraform(experiment):
         run_env['TF_VAR_jdk_version'] = "/usr/local/bin/graalvm-ce-java8-20.2.0/"
 
     cores = experiment['cores']
+    ## minimum number or cores is 2
+    if cores == 1:
+        cores = 2
+
     machine_type = f'e2-highmem-{cores}'
     run_env['TF_VAR_machine_type'] = machine_type
 
@@ -33,7 +37,7 @@ if __name__ == '__main__':
     # load csv file
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
-    argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="experiment number 1-indexed", default=0)
+    argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
 
     arguments = argument_parser.parse_args()
     csv_file = csv.reader(open(arguments.plan))
@@ -47,13 +51,13 @@ if __name__ == '__main__':
                 'batch': l[4]
                 }
         all_exp.append(exp)
-    if arguments.experiment == 0:
+    if arguments.experiment == -1:
         # run all one-by-one
         print('will run all experiments')
         pass
     else:
-        run_terraform(all_exp[arguments.experiment - 1])
         #run a single experiment
+        run_terraform(all_exp[arguments.experiment])
 
 
 
