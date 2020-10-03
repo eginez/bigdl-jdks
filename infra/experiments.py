@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     #p = exec_cmd(['ls' , '-larth'], multiplex='out.txt')
     #get_master_ip(p)
-    exit(0)
+    #exit(0)
 
     csv_file = csv.reader(open(arguments.plan))
     headers = next(csv_file, None)
