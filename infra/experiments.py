@@ -148,7 +148,7 @@ if __name__ == '__main__':
     else:
         #run a single experiment
         exp = all_exp[arguments.experiment]
-        run_one(exp)
+        run_one(exp, arguments)
 
 
 
