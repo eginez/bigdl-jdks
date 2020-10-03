@@ -96,6 +96,17 @@ def get_master_ip(out):
             return parts[1].strip()
     return None
 
+def run_one(exp, arguments):
+    out = run_terraform(exp)
+    master_ip = get_master_ip(out)
+    now = str(int(time.time()))
+    outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
+    if master_ip is None:
+        print("Can not find master ip. Execute ml script manually")
+        exit(0)
+    run_ml(outfile, master_ip, arguments.ml, exp['batch'])
+    exec_cmd(['terraform', 'destroy', '-auto-approve'])
+
 
 
 if __name__ == '__main__':
@@ -137,14 +148,7 @@ if __name__ == '__main__':
     else:
         #run a single experiment
         exp = all_exp[arguments.experiment]
-        out = run_terraform(exp)
-        master_ip = get_master_ip(out)
-        now = str(int(time.time()))
-        outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
-        if master_ip is None:
-            print("Can not find master ip. Execute ml script manually")
-            exit(0)
-        run_ml(outfile, master_ip, arguments.ml, exp['batch'])
+        run_one(exp)
 
 
 
