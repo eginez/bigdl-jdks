@@ -3,24 +3,30 @@
 from argparse import ArgumentParser
 import csv
 import subprocess
+import os
 
 def run_terraform(experiment):
     print(f'Will run experiment with setup: {experiment}')
-    cmd = ['terraform', 'apply']
+    run_env = os.environ.copy()
+    cmd = ['terraform', 'apply', '-auto-approve']
+
     nodes = experiment['nodes']
-    cmd.append(f'-var="num_nodes={nodes}"')
+    run_env['TF_VAR_num_nodes'] = nodes
+
+    run_env['TF_VAR_jdk_version'] = '/usr/lib/jvm/java-8-openjdk-amd64/'
     if 'Graal' in experiment['JIT']:
-        cmd.append(f'-var="jdk_version=/usr/local/bin/graalvm-ce-java8-20.2.0/"')
-    else:
-        cmd.append(f'-var="jdk_version=/usr/lib/jvm/java-8-openjdk-amd64/')
+        run_env['TF_VAR_jdk_version'] = "/usr/local/bin/graalvm-ce-java8-20.2.0/"
 
     cores = experiment['cores']
     machine_type = f'e2-highmem-{cores}'
-    cmd.append(f'-var="machine_type={machine_type}"')
-    batch = experiment['batch']
-    cmd.append(f'-var="batch_size={batch}"')
+    run_env['TF_VAR_machine_type'] = machine_type
 
-    print(f'Will run command: {cmd}')
+    batch = experiment['batch']
+    run_env['TF_VAR_batch_size'] = batch
+
+    cmd_str = ' '.join(cmd)
+    print(f'Will run command: {cmd_str} with env {run_env}')
+    subprocess.run(cmd, env=run_env)
 
 
 if __name__ == '__main__':
