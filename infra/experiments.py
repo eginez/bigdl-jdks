@@ -39,10 +39,9 @@ def exec_cmd(cmd, env=os.environ.copy(), multiplex=None, wd=os.path.abspath('.')
 
 
 
-def run_terraform(experiment):
-    print(f'Will run experiment with setup: {experiment}')
+def run_terraform(experiment, tf_command='apply'):
     run_env = os.environ.copy()
-    cmd = ['terraform', 'apply', '-auto-approve', '-no-color']
+    cmd = ['terraform', tf_command, '-auto-approve', '-no-color']
     run_env['TF_VAR_user'] = user
     run_env['TF_VAR_project_id'] = project_id
 
@@ -97,7 +96,7 @@ def get_master_ip(out):
     return None
 
 def run_one(exp, arguments):
-    print('Creating infra')
+    print(f'Will run experiment with setup: {exp}')
     out = run_terraform(exp)
     master_ip = get_master_ip(out)
     now = str(int(time.time()))
@@ -110,7 +109,7 @@ def run_one(exp, arguments):
     run_ml(outfile, master_ip, arguments.ml, exp['batch'])
 
     print('Destroying infra')
-    exec_cmd(['terraform', 'destroy', '-auto-approve'])
+    out = run_terraform(exp, tf_command='destroy')
 
 
 
