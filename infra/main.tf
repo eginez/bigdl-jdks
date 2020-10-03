@@ -42,6 +42,11 @@ variable "machine_type" {
   default = "e2-highmem-4" 
 }
 
+variable "batch_size" {
+  description  = "The batch size"
+  default = "100"
+}
+
 # user name for ssh key
 variable "user" {}
 

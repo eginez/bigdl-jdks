@@ -6,6 +6,9 @@
 # Design, experiment, and analysis output
 *.csv
 
+# Work environment
+work_env
+
 ### Linux ###
 *~
 
