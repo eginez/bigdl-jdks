@@ -82,7 +82,7 @@ def run_ml(outfile, master_ip, local_path_ml_script, batch):
 
     #script_name=os.path.basename(local_path_ml_script)
     ##run script in master
-    run_script_cmd = ["bash", local_path_ml_script, master_ip, batch]
+    run_script_cmd = ["bash", "-x", local_path_ml_script, master_ip, batch]
     #subprocess.run(copy_cmd)
     ml_dir = os.path.dirname(local_path_ml_script)
     exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
