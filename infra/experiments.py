@@ -5,6 +5,8 @@ import csv
 import subprocess
 import os
 import sys
+import time
+
 
 dry_run = False
 user = None
@@ -13,6 +15,11 @@ project_id = None
 def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
     cmd_str = ' '.join(cmd)
     output = []
+    outf = None
+
+    if multiplex is not None:
+        outf = open(multiplex, 'w')
+
     if dry_run:
         print(f'Will run command: {cmd_str} with env {env}')
         return None
@@ -23,11 +30,11 @@ def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
         for line in iter(process.stdout.readline, ''):
             sys.stdout.write(line)
             output.append(line)
+            if outf is not None:
+                outf.write(line)
 
-    if multiplex is not None:
-        outf = open(multiplex, 'w')
-        outf.write('\n'.join(output).encode('utf-8'))
-
+    if outf is not None:
+        outf.close()
     return output
 
 
@@ -60,7 +67,7 @@ def run_terraform(experiment):
 
     return exec_cmd(cmd, run_env)
 
-def run_ml(master_ip, local_path_ml_script):
+def run_ml(outfile, master_ip, local_path_ml_script):
     remote_ml_dir = '/tmp/ml_scripts'
     #create a dir in well know location in master
     cmd_create_dir = ['ssh', master_ip, 'mkdir', '-p', remote_ml_dir]
@@ -77,7 +84,7 @@ def run_ml(master_ip, local_path_ml_script):
     #run script in master
     run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}", f"{master_ip}"]
     #subprocess.run(copy_cmd)
-    exec_cmd(run_script_cmd, multiplex='output.txt')
+    exec_cmd(run_script_cmd, multiplex=outfile)
 
 def get_master_ip(out):
     for line in out:
@@ -105,9 +112,9 @@ if __name__ == '__main__':
     user = arguments.user
     project_id = arguments.project
 
-    #p = exec_cmd(['ls' , '-larth'])
+    #p = exec_cmd(['ls' , '-larth'], multiplex='out.txt')
     #get_master_ip(p)
-    #exit(0)
+    exit(0)
 
     csv_file = csv.reader(open(arguments.plan))
     headers = next(csv_file, None)
@@ -128,14 +135,16 @@ if __name__ == '__main__':
         pass
     else:
         #run a single experiment
-        out = run_terraform(all_exp[arguments.experiment])
+        exp = all_exp[arguments.experiment])
+        out = run_terraform(exp)
         master_ip = get_master_ip(out)
+        now = str(int(time.time()))
+        outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
+        if master_ip is None:
+            print("Can not find master ip. Execute ml script manually")
+            exit(0)
+        run_ml(outfile, master_ip, arguments.ml)
 
-    if master_ip is None:
-        print("Can not find master ip. Execute ml script manually")
-        exit(0)
-
-    run_ml(master_ip, arguments.ml)
 
 
 
