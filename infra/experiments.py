@@ -68,22 +68,22 @@ def run_terraform(experiment):
 
     return exec_cmd(cmd, run_env)
 
-def run_ml(outfile, master_ip, local_path_ml_script):
-    remote_ml_dir = '/tmp/ml_scripts'
-    #create a dir in well know location in master
-    cmd_create_dir = ['ssh', master_ip, 'mkdir', '-p', remote_ml_dir]
+def run_ml(outfile, master_ip, local_path_ml_script, batch):
+    #remote_ml_dir = '/tmp/ml_scripts'
+    ##create a dir in well know location in master
+    #cmd_create_dir = ['ssh', master_ip, 'mkdir', '-p', remote_ml_dir]
 
-    exec_cmd(cmd_create_dir)
-    #subprocess.run(cmd_create_dir)
+    #exec_cmd(cmd_create_dir)
+    ##subprocess.run(cmd_create_dir)
 
-    #copy ml_script to to 
-    copy_cmd = ['scp',local_path_ml_script, f"{master_ip}:{remote_ml_dir}"]
-    #subprocess.run(copy_cmd)
-    exec_cmd(copy_cmd)
+    ##copy ml_script to to 
+    #copy_cmd = ['scp',local_path_ml_script, f"{master_ip}:{remote_ml_dir}"]
+    ##subprocess.run(copy_cmd)
+    #exec_cmd(copy_cmd)
 
-    script_name=os.path.basename(local_path_ml_script)
-    #run script in master
-    run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}", f"{master_ip}"]
+    #script_name=os.path.basename(local_path_ml_script)
+    ##run script in master
+    run_script_cmd = ["bash", local_path_ml_script, master_ip, batch]
     #subprocess.run(copy_cmd)
     exec_cmd(run_script_cmd, multiplex=outfile)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         if master_ip is None:
             print("Can not find master ip. Execute ml script manually")
             exit(0)
-        run_ml(outfile, master_ip, arguments.ml)
+        run_ml(outfile, master_ip, arguments.ml, arguments.batch)
 
 
 
