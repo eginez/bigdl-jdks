@@ -135,7 +135,7 @@ if __name__ == '__main__':
         pass
     else:
         #run a single experiment
-        exp = all_exp[arguments.experiment])
+        exp = all_exp[arguments.experiment]
         out = run_terraform(exp)
         master_ip = get_master_ip(out)
         now = str(int(time.time()))
