@@ -4,16 +4,21 @@ from argparse import ArgumentParser
 import csv
 import subprocess
 import os
+import sys
 
-dry_run = True
+dry_run = False
 
 def exec_cmd(cmd, env=os.environ.copy()):
+    cmd_str = ' '.join(cmd)
     if dry_run:
-        cmd_str = ' '.join(cmd)
         print(f'Will run command: {cmd_str} with env {env}')
+        return None
     else:
         print(f'Executing command: {cmd_str} with env {env}')
-        subprocess.run(cmd, env=env)
+        process = subprocess.run(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True)
+        for line in iter(process.stdout):
+            sys.stdout.write(line)
+        return process
 
 
 
@@ -66,6 +71,16 @@ def run_ml(master_ip, local_path_ml_script):
     #subprocess.run(copy_cmd)
     exec_cmd(run_script_cmd)
 
+def get_master_ip(proc):
+    for line in iter(proc.stdout):
+        sys.stdout.write(line)
+        if 'ip_master_internal' in line:
+            parts = line.split(':')
+            print(f"Found {part[1]}")
+            return part[1]
+    return None
+
+
 
 if __name__ == '__main__':
     # load csv file
@@ -77,6 +92,11 @@ if __name__ == '__main__':
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
+
+    #p = exec_cmd(['ls' , '-larth'])
+    #get_master_ip(p)
+    #exit(0)
+
     csv_file = csv.reader(open(arguments.plan))
     headers = next(csv_file, None)
     all_exp = []
@@ -89,15 +109,21 @@ if __name__ == '__main__':
                 }
         all_exp.append(exp)
 
+    master_ip = None
     if arguments.experiment == -1:
         # run all one-by-one
         print('will run all experiments')
         pass
     else:
         #run a single experiment
-        run_terraform(all_exp[arguments.experiment])
-    ## run the ml command
-    run_ml('10.1.1.0', arguments.ml)
+        p = run_terraform(all_exp[arguments.experiment])
+        master_ip = get_master_ip(p)
+
+    if master_ip is None:
+        print("Can not find master ip. Execute ml script manually")
+        exit(0)
+
+    run_ml(master_ip, arguments.ml)
 
 
 
