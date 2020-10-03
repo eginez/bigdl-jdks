@@ -7,6 +7,8 @@ import os
 import sys
 
 dry_run = False
+user = None
+project_id = None
 
 def exec_cmd(cmd, env=os.environ.copy()):
     cmd_str = ' '.join(cmd)
@@ -26,6 +28,8 @@ def run_terraform(experiment):
     print(f'Will run experiment with setup: {experiment}')
     run_env = os.environ.copy()
     cmd = ['terraform', 'apply', '-auto-approve']
+    run_env['TF_VAR_user'] = user
+    run_env['TF_VAR_project_id'] = project_id
 
     nodes = experiment['nodes']
     run_env['TF_VAR_num_nodes'] = nodes
@@ -86,12 +90,16 @@ if __name__ == '__main__':
     # load csv file
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
+    argument_parser.add_argument("-u", "--user", required=True, help="user")
+    argument_parser.add_argument("-i", "--project-id", dest='project' required=True, help="the google project id")
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
+    user = arguments.user
+    project_id = arguments.project
 
     #p = exec_cmd(['ls' , '-larth'])
     #get_master_ip(p)
