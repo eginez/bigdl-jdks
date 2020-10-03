@@ -10,7 +10,7 @@ dry_run = False
 user = None
 project_id = None
 
-def exec_cmd(cmd, env=os.environ.copy()):
+def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
     cmd_str = ' '.join(cmd)
     output = []
     if dry_run:
@@ -23,6 +23,11 @@ def exec_cmd(cmd, env=os.environ.copy()):
         for line in iter(process.stdout.readline, ''):
             sys.stdout.write(line)
             output.append(line)
+
+    if multiplex is not None:
+        outf = open(multiplex, 'w')
+        outf.write('\n'.join(output).encode('utf-8'))
+
     return output
 
 
@@ -53,9 +58,6 @@ def run_terraform(experiment):
     batch = experiment['batch']
     run_env['TF_VAR_batch_size'] = batch
 
-    cmd_str = ' '.join(cmd)
-    print(f'will run command: {cmd_str} with env {run_env}')
-
     return exec_cmd(cmd, run_env)
 
 def run_ml(master_ip, local_path_ml_script):
@@ -75,7 +77,7 @@ def run_ml(master_ip, local_path_ml_script):
     #run script in master
     run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}", f"{master_ip}"]
     #subprocess.run(copy_cmd)
-    exec_cmd(run_script_cmd)
+    exec_cmd(run_script_cmd, multiplex='output.txt')
 
 def get_master_ip(out):
     for line in out:
