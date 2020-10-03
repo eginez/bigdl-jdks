@@ -18,7 +18,7 @@ def exec_cmd(cmd, env=os.environ.copy()):
     else:
         print(f'Executing command: {cmd_str} with env {env}')
         process = subprocess.run(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True)
-        for line in iter(process.stdout):
+        for line in iter(process.stdout.readline, b''):
             sys.stdout.write(line)
         return process
 
