@@ -18,6 +18,7 @@ def exec_cmd(cmd, env=os.environ.copy(), multiplex=None):
     outf = None
 
     if multiplex is not None:
+        print(f"Will save output to  {multiplex}")
         outf = open(multiplex, 'w')
 
     if dry_run:
