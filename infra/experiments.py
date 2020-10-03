@@ -12,22 +12,25 @@ project_id = None
 
 def exec_cmd(cmd, env=os.environ.copy()):
     cmd_str = ' '.join(cmd)
+    output = []
     if dry_run:
         print(f'Will run command: {cmd_str} with env {env}')
         return None
     else:
-        print(f'Executing command: {cmd_str} with env {env}')
-        process = subprocess.run(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True)
-        for line in iter(process.stdout.readline, b''):
+        #print(f'Executing command: {cmd_str} with env {env}')
+        print(f'Executing command: {cmd_str}')
+        process = subprocess.Popen(cmd, env=env,stdout=subprocess.PIPE,universal_newlines=True)
+        for line in iter(process.stdout.readline, ''):
             sys.stdout.write(line)
-        return process
+            output.append(line)
+    return output
 
 
 
 def run_terraform(experiment):
     print(f'Will run experiment with setup: {experiment}')
     run_env = os.environ.copy()
-    cmd = ['terraform', 'apply', '-auto-approve']
+    cmd = ['terraform', 'apply', '-auto-approve', '-no-color']
     run_env['TF_VAR_user'] = user
     run_env['TF_VAR_project_id'] = project_id
 
@@ -53,8 +56,7 @@ def run_terraform(experiment):
     cmd_str = ' '.join(cmd)
     print(f'will run command: {cmd_str} with env {run_env}')
 
-    exec_cmd(cmd, run_env)
-    #subprocess.run(cmd, env=run_env)
+    return exec_cmd(cmd, run_env)
 
 def run_ml(master_ip, local_path_ml_script):
     remote_ml_dir = '/tmp/ml_scripts'
@@ -71,17 +73,17 @@ def run_ml(master_ip, local_path_ml_script):
 
     script_name=os.path.basename(local_path_ml_script)
     #run script in master
-    run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}"]
+    run_script_cmd = ['ssh', master_ip, "bash", f"{remote_ml_dir}/{script_name}", f"{master_ip}"]
     #subprocess.run(copy_cmd)
     exec_cmd(run_script_cmd)
 
-def get_master_ip(proc):
-    for line in iter(proc.stdout):
+def get_master_ip(out):
+    for line in out:
         sys.stdout.write(line)
         if 'ip_master_internal' in line:
-            parts = line.split(':')
-            print(f"Found {part[1]}")
-            return part[1]
+            parts = line.split('=')
+            print(f"Found {parts[1]}")
+            return parts[1].strip()
     return None
 
 
@@ -124,8 +126,8 @@ if __name__ == '__main__':
         pass
     else:
         #run a single experiment
-        p = run_terraform(all_exp[arguments.experiment])
-        master_ip = get_master_ip(p)
+        out = run_terraform(all_exp[arguments.experiment])
+        master_ip = get_master_ip(out)
 
     if master_ip is None:
         print("Can not find master ip. Execute ml script manually")
