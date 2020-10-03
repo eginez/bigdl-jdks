@@ -6,6 +6,7 @@ import subprocess
 import os
 
 def exec_cmd(cmd, env):
+    dry-run=True
     if dry-run:
         cmd_str = ' '.join(cmd)
         print(f'Will run command: {cmd_str} with env {env}')
@@ -30,6 +31,7 @@ def run_terraform(experiment):
     cores = experiment['cores']
     ## minimum number or cores is 2
     if int(cores) == 1:
+        print("WARNING resetting cores to 2, cores can not be 1")
         cores = "2"
 
     machine_type = f'e2-highmem-{cores}'
