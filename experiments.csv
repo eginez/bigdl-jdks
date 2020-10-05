@@ -1,9 +1,0 @@
-index,compiler,nodes,cores,batch
-0,C2,1,1,100
-1,GraalVM,1,1,1
-2,C2,4,1,1
-3,GraalVM,4,1,100
-4,C2,1,4,100
-5,GraalVM,1,4,1
-6,C2,4,4,1
-7,GraalVM,4,4,100
