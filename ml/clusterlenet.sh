@@ -1,9 +1,7 @@
 #!/bin/bash
 ## $1 first parameter ip address
 ## $2 batch size
-## constraints
-## $3 iteration
-## $4 validation score
+## $3 filename
 ssh -o StrictHostKeyChecking=no $1 mkdir -p /tmp/ml_scripts
 scp lenet5.py  $1:/tmp/ml_scripts
 ## TODO add more setup steps
