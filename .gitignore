@@ -5,6 +5,7 @@
 
 # Design, experiment, and analysis output
 *.csv
+*.txt
 
 # Work environment
 work_env
