@@ -81,11 +81,12 @@ resource "google_compute_instance" "vm_instance_master" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
+      "sudo chown -R `whoami` /home/am72ghiassi/bd/",
+      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
       "/home/am72ghiassi/bd/spark/sbin/start-master.sh"
     ]
   }
@@ -124,11 +125,12 @@ resource "google_compute_instance" "vm_instance_slaves" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
-      "sudo echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
+      "sudo chown -R `whoami` /home/am72ghiassi/bd/",
+      "echo SPARK_MASTER_HOST='${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}' >> /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo JAVA_HOME=${var.jdk_version} >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SCALA_HOME=/usr/share/scala-2.11/ >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo PYSPARK_PYTHON=/usr/bin/python >>  /home/am72ghiassi/bd/spark/conf/spark-env.sh",
+      "echo SHAPE_VM_SLAVES='${var.machine_type}' >> /tmp/shape_vm_slaves.txt",
       "/home/am72ghiassi/bd/spark/sbin/start-slave.sh spark://${google_compute_instance.vm_instance_master[0].network_interface.0.network_ip}:7077"
     ]
   }
