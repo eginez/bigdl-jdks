@@ -89,6 +89,7 @@ if __name__ == "__main__":
         x=stop-start
        # print(str(x)+","+a[18:32])
         f = open('result.csv','w')
+        f.write("runtime,accuracy")
         f.write(str(x)+","+a[18:32])
         f.close()
     elif options.action == "test":
