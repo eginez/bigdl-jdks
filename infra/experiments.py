@@ -13,6 +13,7 @@ dry_run = False
 user = None
 project_id = None
 path_json_sample = 'conf.json.sample'
+run_gen = True
 
 def create_conf_json(cores, nodes, batch_size, master_ip):
     #1 driver cores
@@ -128,9 +129,12 @@ def run_one(exp, arguments):
         print("Can not find master ip. Execute ml script manually")
         return
 
-    print('Running ml code')
-    #run_ml(outfile, master_ip, arguments.ml, exp['batch'])
-    run_ml_sparkgen(outfile, master_ip, arguments.ml, exp['batch'], json_conf)
+    if run_gen:
+        print('Running ml code sparkgen')
+        run_ml_sparkgen(outfile, master_ip, arguments.ml, exp['batch'], json_conf)
+    else:
+        print('Running ml code')
+        run_ml(outfile, master_ip, arguments.ml, exp['batch'])
 
     print('Destroying infra')
     out = run_terraform(exp, tf_command='destroy')
@@ -147,12 +151,15 @@ if __name__ == '__main__':
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
+    argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', default=True, help="Disable spark gen and run normally. This requires a change in the script")
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
     user = arguments.user
     project_id = arguments.project
     path_json_sample = arguments.sample
+    run_gen = arguments.gen
+
 
 
 
