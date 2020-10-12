@@ -151,7 +151,7 @@ if __name__ == '__main__':
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
-    argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', default=True, help="Disable spark gen and run normally. This requires a change in the script")
+    argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', help="Enable spark gen and run normally. This requires a change in the ml script")
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
@@ -159,7 +159,6 @@ if __name__ == '__main__':
     project_id = arguments.project
     path_json_sample = arguments.sample
     run_gen = arguments.gen
-
 
 
 
