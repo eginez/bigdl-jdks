@@ -5,7 +5,7 @@
 ## $4 config file json file
 
 
-ssh -o trictHostKeyChecking=no $1 mkdir -p /tmp/ml_scripts
+ssh -o StrictHostKeyChecking=no $1 mkdir -p /tmp/ml_scripts
 scp lenet5.py  $1:/tmp/ml_scripts
 ## Copy generated conf.json
 scp $4  $1:/tmp/ml_scripts
