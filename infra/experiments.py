@@ -6,11 +6,36 @@ import subprocess
 import os
 import sys
 import time
+from string import Template
 
 
 dry_run = False
 user = None
 project_id = None
+path_json_sample = 'conf.json.sample'
+
+def create_conf_json(cores, nodes, batch_size, master_ip):
+    #1 driver cores
+    #2 total executor cores = # of instanes * core per instance
+    #3 executor cores
+    #7 master ip
+    #7 labmda
+    total_exec_cores = str(int(nodes) * int(cores))
+    content = ''
+    with open(path_json_sample) as f:
+        raw = f.read()
+        tmpl = Template(raw)
+        content = tmpl.substitute(driver=cores, total=total_exec_cores, exec=cores, batchSize=batch_size, master_ip=master_ip)
+
+    with open('conf.json', 'w') as conf:
+        conf.write(content)
+
+    conf_path = os.path.abspath('conf.json')
+    print("Will put conf.json in " + conf_path)
+    return conf_path
+
+        
+        
 
 def exec_cmd(cmd, env=os.environ.copy(), multiplex=None, wd=os.path.abspath('.')):
     cmd_str = ' '.join(cmd)
@@ -67,21 +92,15 @@ def run_terraform(experiment, tf_command='apply'):
     return exec_cmd(cmd, run_env)
 
 def run_ml(outfile, master_ip, local_path_ml_script, batch):
-    #remote_ml_dir = '/tmp/ml_scripts'
-    ##create a dir in well know location in master
-    #cmd_create_dir = ['ssh', master_ip, 'mkdir', '-p', remote_ml_dir]
-
-    #exec_cmd(cmd_create_dir)
-    ##subprocess.run(cmd_create_dir)
-
-    ##copy ml_script to to 
-    #copy_cmd = ['scp',local_path_ml_script, f"{master_ip}:{remote_ml_dir}"]
-    ##subprocess.run(copy_cmd)
-    #exec_cmd(copy_cmd)
-
-    #script_name=os.path.basename(local_path_ml_script)
     ##run script in master
     run_script_cmd = ["bash", "-x", local_path_ml_script, master_ip, batch, outfile]
+    #subprocess.run(copy_cmd)
+    ml_dir = os.path.dirname(local_path_ml_script)
+    exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
+
+def run_ml_sparkgen(outfile, master_ip, local_path_ml_script, batch, json_conf):
+    ##run script in master
+    run_script_cmd = ["bash", "-x", local_path_ml_script, master_ip, batch, outfile, json_conf]
     #subprocess.run(copy_cmd)
     ml_dir = os.path.dirname(local_path_ml_script)
     exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
@@ -100,13 +119,18 @@ def run_one(exp, arguments):
     out = run_terraform(exp)
     master_ip = get_master_ip(out)
     now = str(int(time.time()))
+
+    ##Create conf.json
+    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip)
+
     outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
     if master_ip is None:
         print("Can not find master ip. Execute ml script manually")
         return
 
     print('Running ml code')
-    run_ml(outfile, master_ip, arguments.ml, exp['batch'])
+    #run_ml(outfile, master_ip, arguments.ml, exp['batch'])
+    run_ml_sparkgen(outfile, master_ip, arguments.ml, exp['batch'], json_conf)
 
     print('Destroying infra')
     out = run_terraform(exp, tf_command='destroy')
@@ -117,6 +141,7 @@ if __name__ == '__main__':
     # load csv file
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
+    argument_parser.add_argument("-j", "--sample", required=False, help="path to json sample file", default='conf.json.sample')
     argument_parser.add_argument("-u", "--user", required=True, help="user")
     argument_parser.add_argument("-i", "--project-id", dest='project', required=True, help="the google project id")
     argument_parser.add_argument("-e", "--experiment", type=int, required=True, help="index of the experiment to run", default=0)
@@ -127,6 +152,9 @@ if __name__ == '__main__':
     dry_run = arguments.dryrun
     user = arguments.user
     project_id = arguments.project
+    path_json_sample = arguments.sample
+
+
 
     #p = exec_cmd(['ls' , '-larth'], multiplex='out.txt')
     #get_master_ip(p)

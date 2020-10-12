@@ -1,0 +1,37 @@
+{
+  "jobClassParameters" : [
+    {
+        "systemParameters": {
+            "driverCores": "${driver}",
+            "driverMemory": "4G",
+            "totalExecutorCores": "${total}",
+            "executorCores": "${exec}",
+            "executorMemory": "4G",
+            "pyFiles": "/home/am72ghiassi/bd/spark/lib/bigdl-0.11.0-python-api.zip,/home/am72ghiassi/bd/codes/bi-rnn.py",
+            "propertiesFile": "/home/am72ghiassi/bd/spark/conf/spark-bigdl.conf",
+            "jars": "/home/am72ghiassi/bd/spark/lib/bigdl-SPARK_2.3-0.11.0-jar-with-dependencies.jar",
+            "conf": [
+                "spark.driver.extraClassPath=/home/am72ghiassi/bd/spark/lib/bigdl-SPARK_2.3-0.11.0-jar-with-dependencies.jar", 
+                "spark.executer.extraClassPath=bigdl-SPARK_2.3-0.11.0-jar-with-dependencies.jar /home/am72ghiassi/codes/bi-rnn.py"
+            ],
+            "action": "train",
+            "dataPath": "/tmp/mnist"
+        },
+        "hyperParameters": {
+            "batchSize": "${batchSize}",
+            "maxEpoch": "5",
+            "learningRate": "0.01",
+            "learningrateDecay": "0.0002"
+        },
+        "classProbability": 0.001,
+        "priorities": [
+            {"priority": 1, "probability": 1}
+        ]
+    } 
+  ],
+  "master": "spark://${master_ip}:7077",
+  "lambda" : 0.001,
+  "runtime" : 3600,
+  "preemptJobs" : 0
+}
+
