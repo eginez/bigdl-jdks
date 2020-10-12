@@ -1,5 +1,7 @@
 #! /bin/python3
 
+## python3 experiments.py -p ../experiments.csv -e 0 -m ../ml/clusterlenet.sh -u user -i [google_project_id] --gen
+
 from argparse import ArgumentParser
 import csv
 import subprocess
