@@ -76,7 +76,18 @@ if __name__ == "__main__":
             optim_method=SGD(learningrate=learning_rate, learningrate_decay=learning_rate_decay),
             end_trigger=get_end_trigger(options),
             batch_size=options.batchSize)
-        validate_optimizer(optimizer, test_data, options)
+
+        # validate_optimizer(optimizer, test_data, options)
+
+        # Copied from function above to adapt it to early-exit each n iterations instead of each epoch.
+        optimizer.set_validation(
+            batch_size=options.batchSize,
+            val_rdd=test_data,
+            trigger=SeveralIteration(10),
+            val_method=[Top1Accuracy()]
+        )
+        optimizer.set_checkpoint(SeveralIteration(10), options.checkpointPath)
+        
         trained_model = optimizer.optimize()
         parameters = trained_model.parameters()
         results = trained_model.evaluate(test_data, options.batchSize, [Top1Accuracy()])
