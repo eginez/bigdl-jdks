@@ -88,9 +88,9 @@ if __name__ == "__main__":
             a=str(result)
         x=stop-start
        # print(str(x)+","+a[18:32])
-        f = open('result.csv','w')
+        f = open('result.csv','a')
         f.write("runtime,accuracy")
-        f.write(str(x)+","+a[18:32])
+        f.write(str(x)+","+a[18:32]+"\n")
         f.close()
     elif options.action == "test":
         # Load a pre-trained model and then validate it through top1 accuracy.
