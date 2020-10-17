@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
-
+import timeit
+import csv
 
 import pandas
 import datetime as dt
@@ -57,7 +58,7 @@ def get_mnist(sc, data_type="train", location="/tmp/mnist"):
     record = images.zip(labels)
     return record
 
-        
+
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-a", "--action", dest="action", default="train")
@@ -82,7 +83,8 @@ if __name__ == "__main__":
     learning_rate = float(options.learningRate)
     learning_rate_decay = float(options.learningrateDecay)
     if options.action == "train":
-        def get_end_trigger(options):
+        start = timeit.default_timer()
+        def get_end_trigger():
             if options.itr==None:
                 return MaxScore(options.score)
             else:
@@ -92,9 +94,9 @@ if __name__ == "__main__":
              .map(lambda rec_tuple: (normalizer(rec_tuple[0], mnist.TRAIN_MEAN, mnist.TRAIN_STD),rec_tuple[1])).map(lambda t: Sample.from_ndarray(t[0], t[1]))
         test_data = get_mnist(sc, "test", options.dataPath)\
         .map(lambda rec_tuple: (normalizer(rec_tuple[0], mnist.TEST_MEAN, mnist.TEST_STD), rec_tuple[1])).map(lambda t: Sample.from_ndarray(t[0], t[1]))
-        
-       
-        
+
+
+
         optimizer = Optimizer(
             model=build_model(n_input, n_hidden, n_classes),
             training_rdd=train_data,
@@ -111,9 +113,15 @@ if __name__ == "__main__":
         optimizer.set_checkpoint(EveryEpoch(), options.checkpointPath)
         trained_model = optimizer.optimize()
         parameters = trained_model.parameters()
+        results = trained_model.evaluate(test_data, options.batchSize, [Top1Accuracy()])
+        stop = timeit.default_timer()
         for result in results:
-            print(result)
-        results = model.evaluate(test_data, options.batchSize, [Top1Accuracy()])
+            a=str(result)
+        x=stop-start
+        f = open('result1.csv','a')
+        f.write("runtime,accuracy")
+        f.write(str(x)+","+a[18:32]+"\n")
+        f.close()
     elif options.action == "test":
         # Load a pre-trained model and then validate it through top1 accuracy.
         test_data = get_mnist(sc, "test").map(normalizer(mnist.TEST_MEAN, mnist.TEST_STD))
@@ -122,4 +130,3 @@ if __name__ == "__main__":
         for result in results:
             print(result)
     sc.stop()
-
