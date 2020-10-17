@@ -83,10 +83,10 @@ if __name__ == "__main__":
         optimizer.set_validation(
             batch_size=options.batchSize,
             val_rdd=test_data,
-            trigger=SeveralIteration(10),
+            trigger=SeveralIteration(100),
             val_method=[Top1Accuracy()]
         )
-        optimizer.set_checkpoint(SeveralIteration(10), options.checkpointPath)
+        optimizer.set_checkpoint(SeveralIteration(100), options.checkpointPath)
         
         trained_model = optimizer.optimize()
         parameters = trained_model.parameters()
