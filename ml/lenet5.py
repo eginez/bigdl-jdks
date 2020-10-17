@@ -42,10 +42,7 @@ def build_model(class_num):
 
 def get_end_trigger(options):
     #print("-------------------------------------------------------------------------------",options.itr,options.score)
-    if options.itr==None:
-        return MaxScore(options.score)
-    else:
-        return MaxIteration(options.itr) or MaxScore(options.score)
+    return MaxScore(options.score)
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -58,7 +55,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--dataPath", dest="dataPath", default="/tmp/mnist")
     parser.add_option("-l", "--learningRate", dest="learningRate", default="0.01")
     parser.add_option("-k", "--learningrateDecay", dest="learningrateDecay", default="0.0002")
-    parser.add_option("-i", "--iteration",type=int, dest="itr", default=100)
+    parser.add_option("-i", "--iteration",type=int, dest="itr", default=10000)
     parser.add_option("-s", "--score",type=float, dest="score", default=0.9)
     (options, args) = parser.parse_args(sys.argv)
     sc = SparkContext(appName="lenet5", conf=create_spark_conf())
@@ -89,7 +86,7 @@ if __name__ == "__main__":
         x=stop-start
        # print(str(x)+","+a[18:32])
         f = open('result.csv','a')
-        f.write("runtime,accuracy")
+        f.write("runtime,accuracy\n")
         f.write(str(x)+","+a[18:32]+"\n")
         f.close()
     elif options.action == "test":
