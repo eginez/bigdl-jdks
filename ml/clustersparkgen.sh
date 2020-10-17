@@ -13,5 +13,5 @@ scp $4  $1:/tmp/ml_scripts
 
 ssh -o StrictHostKeyChecking=no $1 ./home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/sparkgen -r -d -c /tmp/ml_scripts/conf.json
 mkdir -p results
-scp $1:/tmp/ml_scripts/lenet5.py/result.csv results/$3.csv
+scp $1:/home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/result.csv results/$3.csv
 gsutil cp results/$3.csv gs://qpecs-output
