@@ -28,5 +28,5 @@ python3 collect.py -b qpecs-output -o measurements.csv
 To analyse the experiment results, we perform ANOVA analysis and compute the main effects of the factors experimented with. The following command should suffice.
 
 ```shell script
-python3 analyse.py -m measurements.csv
+python3 analyse.py -t [anova|effect] -m measurements.csv
 ```
