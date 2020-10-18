@@ -1,2 +1,5 @@
 numpy
 pandas
+google-cloud-storage
+researchpy
+statsmodels
