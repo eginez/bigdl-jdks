@@ -70,7 +70,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--dataPath", dest="dataPath", default="/tmp/mnist")
     parser.add_option("-l", "--learningRate", dest="learningRate", default="0.01")
     parser.add_option("-k", "--learningrateDecay", dest="learningrateDecay", default="0.0002")
-    parser.add_option("-i", "--iteration",type=int, dest="itr", default=100)
+    parser.add_option("-i", "--iteration",type=int, dest="itr", default=10000)
     parser.add_option("-s", "--score",type=float, dest="score", default=0.9)
     (options, args) = parser.parse_args(sys.argv)
 
@@ -104,13 +104,15 @@ if __name__ == "__main__":
             optim_method=SGD(learningrate=learning_rate, learningrate_decay=learning_rate_decay),
             end_trigger=get_end_trigger(),
             batch_size=options.batchSize)
+        
         optimizer.set_validation(
             batch_size=options.batchSize,
             val_rdd=test_data,
-            trigger=EveryEpoch(),
+            trigger=SeveralIteration(100),
             val_method=[Top1Accuracy()]
         )
-        optimizer.set_checkpoint(EveryEpoch(), options.checkpointPath)
+        
+        optimizer.set_checkpoint(SeveralIteration(100), options.checkpointPath)
         trained_model = optimizer.optimize()
         parameters = trained_model.parameters()
         results = trained_model.evaluate(test_data, options.batchSize, [Top1Accuracy()])
