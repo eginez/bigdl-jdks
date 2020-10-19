@@ -11,7 +11,7 @@ scp lenet5.py  $1:/tmp/ml_scripts
 scp $4  $1:/tmp/ml_scripts
 ## TODO add more setup steps
 
-ssh -o StrictHostKeyChecking=no $1 ./home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/sparkgen -r -d -c /tmp/ml_scripts/conf.json
+ssh -o StrictHostKeyChecking=no $1 /home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/sparkgen -r -d -c /tmp/ml_scripts/conf.json
 mkdir -p results
 scp $1:/home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/result.csv results/$3.csv
 #when running more than two workloads
