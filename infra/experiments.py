@@ -177,8 +177,8 @@ if __name__ == '__main__':
                 'JIT': l[1],
                 'nodes': l[2],
                 'cores': l[3],
-                'batch': l[4]
-                'lbd': l[5],
+                'batch': l[4],
+                'lbd': l[5]
                 }
         all_exp.append(exp)
 
