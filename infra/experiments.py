@@ -124,7 +124,7 @@ def run_one(exp, arguments):
     now = str(int(time.time()))
 
     ##Create conf.json
-    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lambda'])
+    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lbd'])
 
     outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
     if master_ip is None:
@@ -177,7 +177,7 @@ if __name__ == '__main__':
                 'nodes': l[2],
                 'cores': l[3],
                 'batch': l[4]
-                'lambda': l[5],
+                'lbd': l[5],
                 }
         all_exp.append(exp)
 
