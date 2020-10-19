@@ -21,7 +21,7 @@ def main():
         for match in re.finditer(".*Waiting ([\\d.]+) seconds for new job.*", content):
             inter_arrival_time = float(match.group(1))
             inter_arrival_times.append(inter_arrival_time)
-        for match in re.finditer(".*,[\\d.]+,([\\d.]+),([\\d.]+)\n.*", content):
+        for match in re.finditer(".*ended with status.*,[\\d.]+,([\\d.]+),([\\d.]+)\n.*", content):
             start_time = float(match.group(1))
             end_time = float(match.group(2))
             service_time = end_time - start_time
