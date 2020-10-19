@@ -16,6 +16,7 @@ ssh -o StrictHostKeyChecking=no $1 cat /tmp/ml_scripts/conf.json
 ssh -o StrictHostKeyChecking=no $1 /home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/sparkgen -r -d -c /tmp/ml_scripts/conf.json > results/measurements.txt
 python3 parse_log.py -l results/measurements.txt -m results/queue-$3.csv
 
+scp -R $1:/home/shrey/test /python_results/
 #when running more than two workloads
 #scp $1:/home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/result1.csv results1/$3.csv
 gsutil cp results/queue-$3.csv gs://qpecs-output
