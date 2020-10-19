@@ -17,7 +17,7 @@ def main():
     rows = []
     with open(arguments.log) as log_file:
         content = "".join(log_file.readlines())
-        for match in re.finditer(".*,([\\d.])+,([\\d.]+),([\\d.]+).*", content):
+        for match in re.finditer(".*,([\\d.]+),([\\d.]+),([\\d.]+).*", content):
             arrival_time = float(match.group(1))
             start_time = float(match.group(2))
             end_time = float(match.group(3))
