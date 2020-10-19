@@ -12,6 +12,7 @@ scp /home/shrey/bigdl-jdks/infra/conf.json  $1:/tmp/ml_scripts
 ## TODO add more setup steps
 
 mkdir -p results
+ssh -o StrictHostKeyChecking=no $1 cat /tmp/ml_scripts/conf.json
 ssh -o StrictHostKeyChecking=no $1 /home/am72ghiassi/bd/sparkgen-bigdl/src/sparkgen/sparkgen -r -d -c /tmp/ml_scripts/conf.json > results/measurements.txt
 python3 parse_log.py -l results/measurements.txt -m results/queue-$3.csv
 
