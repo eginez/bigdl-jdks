@@ -16,6 +16,7 @@ user = None
 project_id = None
 path_json_sample = 'conf.json.sample'
 run_gen = True
+destroy = True
 
 def create_conf_json(cores, nodes, batch_size, master_ip, lbd):
     #1 driver cores
@@ -139,8 +140,11 @@ def run_one(exp, arguments):
         print('Running ml code')
         run_ml(outfile, master_ip, arguments.ml, exp['batch'])
 
-    print('Destroying infra')
-    out = run_terraform(exp, tf_command='destroy')
+    if destroy:
+        print('Destroying infra')
+        out = run_terraform(exp, tf_command='destroy')
+    else:
+        print('Skipping destroy')
 
 
 
@@ -155,6 +159,7 @@ if __name__ == '__main__':
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
     argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', help="Enable spark gen and run normally. This requires a change in the ml script")
+    argument_parser.add_argument("-s", "--skip-destroy", dest='skip', action='store_true', help="Skip destroy terraform")
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
@@ -162,6 +167,7 @@ if __name__ == '__main__':
     project_id = arguments.project
     path_json_sample = arguments.sample
     run_gen = arguments.gen
+    destroy = not arguments.skip
 
 
 
