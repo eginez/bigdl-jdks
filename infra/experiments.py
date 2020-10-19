@@ -159,7 +159,7 @@ if __name__ == '__main__':
     argument_parser.add_argument("-m", "--ml", required=True, help="path to the ml script")
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
     argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', help="Enable spark gen and run normally. This requires a change in the ml script")
-    argument_parser.add_argument("-s", "--skip-destroy", dest='skip', action='store_true', help="Skip destroy terraform")
+    argument_parser.add_argument("-s", "--skip-destroy", dest='skip', action='store_true', help="Skip destroy terraform", default=False)
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
