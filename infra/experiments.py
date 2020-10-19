@@ -99,14 +99,14 @@ def run_ml(outfile, master_ip, local_path_ml_script, batch):
     run_script_cmd = ["bash", "-x", local_path_ml_script, master_ip, batch, outfile]
     #subprocess.run(copy_cmd)
     ml_dir = os.path.dirname(local_path_ml_script)
-    exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
+    exec_cmd(run_script_cmd, multiplex=outfile+'.txt',wd=os.path.abspath(ml_dir))
 
 def run_ml_sparkgen(outfile, master_ip, local_path_ml_script, batch, json_conf):
     ##run script in master
     run_script_cmd = ["bash", "-x", local_path_ml_script, master_ip, batch, outfile, json_conf]
     #subprocess.run(copy_cmd)
     ml_dir = os.path.dirname(local_path_ml_script)
-    exec_cmd(run_script_cmd, multiplex=outfile,wd=os.path.abspath(ml_dir))
+    exec_cmd(run_script_cmd, multiplex=outfile+'.txt',wd=os.path.abspath(ml_dir))
 
 def get_master_ip(out):
     for line in out:
@@ -126,7 +126,8 @@ def run_one(exp, arguments):
     ##Create conf.json
     json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lbd'])
 
-    outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
+    #outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
+    outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) 
     if master_ip is None:
         print("Can not find master ip. Execute ml script manually")
         return
