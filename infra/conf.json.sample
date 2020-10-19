@@ -59,7 +59,7 @@
   ],
   "master": "spark://${master_ip}:7077",
   "lambda" : ${lbd},
-  "runtime" : 3600,
+  "runtime" : 7200,
   "preemptJobs" : 0
 }
 
