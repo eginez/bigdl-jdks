@@ -17,7 +17,7 @@ project_id = None
 path_json_sample = 'conf.json.sample'
 run_gen = True
 
-def create_conf_json(cores, nodes, batch_size, master_ip):
+def create_conf_json(cores, nodes, batch_size, master_ip, lbd):
     #1 driver cores
     #2 total executor cores = # of instanes * core per instance
     #3 executor cores
@@ -28,7 +28,7 @@ def create_conf_json(cores, nodes, batch_size, master_ip):
     with open(path_json_sample) as f:
         raw = f.read()
         tmpl = Template(raw)
-        content = tmpl.substitute(driver=cores, total=total_exec_cores, exec=cores, batchSize=batch_size, master_ip=master_ip)
+        content = tmpl.substitute(driver=cores, total=total_exec_cores, exec=cores, batchSize=batch_size, master_ip=master_ip, lbd=lbd)
 
     with open('conf.json', 'w') as conf:
         conf.write(content)
@@ -124,7 +124,7 @@ def run_one(exp, arguments):
     now = str(int(time.time()))
 
     ##Create conf.json
-    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip)
+    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lbd'])
 
     outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
     if master_ip is None:
@@ -177,6 +177,7 @@ if __name__ == '__main__':
                 'nodes': l[2],
                 'cores': l[3],
                 'batch': l[4]
+                'lbd': l[5],
                 }
         all_exp.append(exp)
 
