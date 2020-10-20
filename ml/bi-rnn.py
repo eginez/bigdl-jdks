@@ -85,11 +85,8 @@ if __name__ == "__main__":
     if options.action == "train":
         start = timeit.default_timer()
         def get_end_trigger():
-            if options.itr==None:
-                return MaxScore(options.score)
-            else:
-                return MaxIteration(options.itr) or MaxScore(options.score)
-
+            return MaxScore(options.score)
+          
         train_data = get_mnist(sc, "train", options.dataPath)\
              .map(lambda rec_tuple: (normalizer(rec_tuple[0], mnist.TRAIN_MEAN, mnist.TRAIN_STD),rec_tuple[1])).map(lambda t: Sample.from_ndarray(t[0], t[1]))
         test_data = get_mnist(sc, "test", options.dataPath)\
