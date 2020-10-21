@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser.add_option("-l", "--learningRate", dest="learningRate", default="0.01")
     parser.add_option("-k", "--learningrateDecay", dest="learningrateDecay", default="0.0002")
     parser.add_option("-i", "--iteration",type=int, dest="itr", default=10000)
-    parser.add_option("-s", "--score",type=float, dest="score", default=0.9)
+    parser.add_option("-s", "--score",type=float, dest="score", default=0.75)
     (options, args) = parser.parse_args(sys.argv)
 
     sc = SparkContext(appName="birnn", conf=create_spark_conf())
