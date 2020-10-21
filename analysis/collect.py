@@ -11,6 +11,7 @@ def main():
     # Parse arguments
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-b", "--bucket", required=True, help="bucket from which to retrieve measurements")
+    argument_parser.add_argument("-f", "--folder", required=True, help="folder from which to retrieve measurements")
     argument_parser.add_argument("-o", "--output", required=True, help="path to CSV output file")
     arguments = argument_parser.parse_args()
 
@@ -20,9 +21,7 @@ def main():
     blobs = bucket.list_blobs()
     rows = []
     for blob in blobs:
-
-        # Add proper prefix/folder matching
-        name_match = re.match("([^q-]+)-([^-]+)-([^-]+)-([^-]+)-.*", blob.name)
+        name_match = re.match(f"{arguments.folder}/([^-]+)-([^-]+)-([^-]+)-([^-]+)-.*", blob.name)
         if name_match:
             compiler = name_match.group(1)
             nodes = int(name_match.group(2))
