@@ -3,7 +3,6 @@ import re
 
 from argparse import ArgumentParser
 from google.cloud import storage
-from re import RegexFlag
 
 
 def main():
@@ -22,7 +21,8 @@ def main():
     rows = []
     for blob in blobs:
 
-        name_match = re.match("([^-]+)-([^-]+)-([^-]+)-([^-]+)-.*", blob.name)
+        # Add proper prefix/folder matching
+        name_match = re.match("([^q-]+)-([^-]+)-([^-]+)-([^-]+)-.*", blob.name)
         if name_match:
             compiler = name_match.group(1)
             nodes = int(name_match.group(2))
@@ -40,7 +40,7 @@ def main():
 
     # Create and store dataframe
     data_frame = pd.DataFrame(rows, columns=["compiler", "nodes", "cores", "batch_size", "runtime", "accuracy"])
-    data_frame.to_csv(arguments.output)
+    data_frame.to_csv(arguments.output, index=False)
 
 
 if __name__ == '__main__':
