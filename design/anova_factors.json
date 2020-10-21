@@ -1,0 +1,6 @@
+{
+  "compiler": ["C2", "GraalVM"],
+  "nodes": [1],
+  "cores": [4],
+  "batch": [64]
+}
