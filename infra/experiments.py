@@ -188,7 +188,7 @@ if __name__ == '__main__':
                 'cores': l[3],
                 'batch': l[4]
                 }
-        if len(l) >= 5:
+        if len(l) > 5:
             exp['lb'] = l[5]
         all_exp.append(exp)
 
