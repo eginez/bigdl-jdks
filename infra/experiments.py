@@ -160,6 +160,7 @@ if __name__ == '__main__':
     argument_parser.add_argument("-d", "--dry-run", dest='dryrun', action='store_true', help="dry-run, print only do not execute")
     argument_parser.add_argument("-g", "--gen", dest='gen', action='store_true', help="Enable spark gen and run normally. This requires a change in the ml script")
     argument_parser.add_argument("-s", "--skip-destroy", dest='skip', action='store_true', help="Skip destroy terraform", default=False)
+    argument_parser.add_argument("-r", "--repetitions", required=False, type=int, help="Repeat the experiment", default=1)
 
     arguments = argument_parser.parse_args()
     dry_run = arguments.dryrun
@@ -189,14 +190,16 @@ if __name__ == '__main__':
         all_exp.append(exp)
 
     master_ip = None
-    if arguments.experiment == -1:
-        print('will run all experiments')
-        for exp in all_exp:
+
+    for _ in range(arguments.repetitions):
+        if arguments.experiment == -1:
+            print('will run all experiments')
+            for exp in all_exp:
+                run_one(exp, arguments)
+        else:
+            #run a single experiment
+            exp = all_exp[arguments.experiment]
             run_one(exp, arguments)
-    else:
-        #run a single experiment
-        exp = all_exp[arguments.experiment]
-        run_one(exp, arguments)
 
 
 
