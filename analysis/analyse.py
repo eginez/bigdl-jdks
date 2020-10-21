@@ -39,7 +39,7 @@ def main():
 
     # Parse arguments
     argument_parser = ArgumentParser()
-    argument_parser.add_argument("-t", "--type", required=True, choices=["effect", "anova", "queue"], help="type of analysis")
+    argument_parser.add_argument("-t", "--type", required=True, choices=["effects", "anova", "queue"], help="type of analysis")
     argument_parser.add_argument("-m", "--measurements", required=True, help="path to CSV file containing measurements")
     argument_parser.add_argument("-o", "--output", required=True, help="path to CSV output file")
     arguments = argument_parser.parse_args()
@@ -48,7 +48,7 @@ def main():
     data_frame = pd.read_csv(arguments.measurements)
 
     # Analyse data
-    if arguments.type == "effect":
+    if arguments.type == "effects":
         results = compute_effects(data_frame)
     elif arguments.type == "anova":
         results = perform_anova(data_frame)
