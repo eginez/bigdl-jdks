@@ -118,17 +118,21 @@ def get_master_ip(out):
             return parts[1].strip()
     return None
 
+
 def run_one(exp, arguments):
     print(f'Will run experiment with setup: {exp}')
     out = run_terraform(exp)
     master_ip = get_master_ip(out)
     now = str(int(time.time()))
 
-    ##Create conf.json
-    json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lbd'])
+    # Create conf.json
+    if 'lbd' in exp:
+        json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, exp['lbd'])
+    else:
+        json_conf = create_conf_json(exp['cores'], exp['nodes'], exp['batch'], master_ip, 0.0)
 
-    #outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
-    outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) 
+    # outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'],exp['batch'], now]) +'.txt'
+    outfile = '-'.join([exp['JIT'], exp['nodes'], exp['cores'], exp['batch'], now])
     if master_ip is None:
         print("Can not find master ip. Execute ml script manually")
         return
@@ -147,8 +151,8 @@ def run_one(exp, arguments):
         print('Skipping destroy')
 
 
-
 if __name__ == '__main__':
+
     # load csv file
     argument_parser = ArgumentParser()
     argument_parser.add_argument("-p", "--plan", required=True, help="path to the plan of experiments CSV output file")
@@ -170,11 +174,9 @@ if __name__ == '__main__':
     run_gen = arguments.gen
     destroy = not arguments.skip
 
-
-
-    #p = exec_cmd(['ls' , '-larth'], multiplex='out.txt')
-    #get_master_ip(p)
-    #exit(0)
+    # p = exec_cmd(['ls' , '-larth'], multiplex='out.txt')
+    # get_master_ip(p)
+    # exit(0)
 
     csv_file = csv.reader(open(arguments.plan))
     headers = next(csv_file, None)
@@ -184,9 +186,10 @@ if __name__ == '__main__':
                 'JIT': l[1],
                 'nodes': l[2],
                 'cores': l[3],
-                'batch': l[4],
-                'lbd': l[5]
+                'batch': l[4]
                 }
+        if len(l) >= 5:
+            exp['lb'] = l[5]
         all_exp.append(exp)
 
     master_ip = None
@@ -197,12 +200,6 @@ if __name__ == '__main__':
             for exp in all_exp:
                 run_one(exp, arguments)
         else:
-            #run a single experiment
+            # run a single experiment
             exp = all_exp[arguments.experiment]
             run_one(exp, arguments)
-
-
-
-
-    
-    
