@@ -6,7 +6,8 @@
 
 
 ssh -o StrictHostKeyChecking=no $1 mkdir -p /tmp/ml_scripts
-scp ../ml/bi-rnn.py  $1:/tmp/ml_scripts
+scp /ml/bi-rnn.py  $1:/tmp/ml_scripts
+scp /home/am72ghiassi/bd/codes/util.py $1:/tmp/ml_scripts
 ## Copy generated conf.json
 scp /home/shrey/bigdl-jdks/infra/conf.json  $1:/tmp/ml_scripts
 ## TODO add more setup steps
