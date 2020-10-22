@@ -7,8 +7,13 @@
 *.csv
 *.txt
 
+# Include data directory
+!data/
+!data/**/*
+
 # Work environment
 work_env
+workspace
 
 ### Linux ###
 *~
