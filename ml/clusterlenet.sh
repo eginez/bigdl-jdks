@@ -2,6 +2,7 @@
 ## $1 first parameter ip address
 ## $2 batch size
 ## $3 filename
+ssh-keygen -R $1
 ssh -o StrictHostKeyChecking=no $1 mkdir -p /tmp/ml_scripts
 scp lenet5.py  $1:/tmp/ml_scripts
 ## TODO add more setup steps
