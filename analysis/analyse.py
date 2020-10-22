@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import statsmodels.api as sm
 
 from argparse import ArgumentParser
@@ -29,6 +30,13 @@ def perform_anova(data_frame):
     return sm.stats.anova_lm(model, typ=1)
 
 
+def perform_full_anova(data_frame):
+    """Create an ANOVA table from the provided data."""
+    data_frame = data_frame.groupby(["compiler", "nodes", "cores"]).tail(5)
+    model = ols("runtime ~ C(compiler)*C(nodes)*C(cores)", data_frame).fit()
+    return sm.stats.anova_lm(model, typ=1)
+
+
 def compute_waiting_time(data_frame):
     """Compute the waiting time and service time from a sequence of job executions."""
     return pd.DataFrame([], columns=["compiler", "waiting time", "service time"])
@@ -39,7 +47,7 @@ def main():
 
     # Parse arguments
     argument_parser = ArgumentParser()
-    argument_parser.add_argument("-t", "--type", required=True, choices=["effects", "anova", "queue"], help="type of analysis")
+    argument_parser.add_argument("-t", "--type", required=True, choices=["effects", "anova", "full-anova", "queue"], help="type of analysis")
     argument_parser.add_argument("-m", "--measurements", required=True, help="path to CSV file containing measurements")
     argument_parser.add_argument("-o", "--output", required=True, help="path to CSV output file")
     arguments = argument_parser.parse_args()
@@ -52,13 +60,15 @@ def main():
         results = compute_effects(data_frame)
     elif arguments.type == "anova":
         results = perform_anova(data_frame)
+    elif arguments.type == "full-anova":
+        results = perform_full_anova(data_frame)
     elif arguments.type == "queue":
         results = compute_waiting_time(data_frame)
     else:
         raise ValueError(f"Invalid analysis type: {arguments.type}")
 
     # Store results
-    results.to_csv(arguments.output, index=False)
+    results.to_csv(arguments.output)
     print(results)
 
 
