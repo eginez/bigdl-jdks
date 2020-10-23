@@ -101,25 +101,26 @@ if __name__ == "__main__":
             optim_method=SGD(learningrate=learning_rate, learningrate_decay=learning_rate_decay),
             end_trigger=get_end_trigger(),
             batch_size=options.batchSize)
-        
+        #validation criteria, trigger=SeveralIteration(100) sets the validation check to every 100 iterations
         optimizer.set_validation(
             batch_size=options.batchSize,
             val_rdd=test_data,
             trigger=SeveralIteration(100),
             val_method=[Top1Accuracy()]
         )
-        
+        #checkpoint is created every 100 iteration to deal with unforseen failures 
         optimizer.set_checkpoint(SeveralIteration(100), options.checkpointPath)
         trained_model = optimizer.optimize()
         parameters = trained_model.parameters()
         results = trained_model.evaluate(test_data, options.batchSize, [Top1Accuracy()])
         stop = timeit.default_timer()
+        #processing validation results
         for result in results:
-            a=str(result)
-        x=stop-start
+            acc=str(result)
+        runtime=stop-start
         f = open('result1.csv','a')
         f.write("runtime,accuracy")
-        f.write(str(x)+","+a[18:32]+"\n")
+        f.write(str(runtime)+","+acc[18:32]+"\n")
         f.close()
     elif options.action == "test":
         # Load a pre-trained model and then validate it through top1 accuracy.
