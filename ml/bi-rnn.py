@@ -84,6 +84,7 @@ if __name__ == "__main__":
     learning_rate_decay = float(options.learningrateDecay)
     if options.action == "train":
         start = timeit.default_timer()
+        #end trigger criteria
         def get_end_trigger():
             return MaxScore(options.score)
           
