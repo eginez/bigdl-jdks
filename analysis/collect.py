@@ -47,7 +47,7 @@ def parse_job_sequences(blobs, folder):
             for data_match in data_matches:
                 arrival_time = float(data_match.group(1))
                 start_time = float(data_match.group(2))
-                end_time = float(data_match.group(2))
+                end_time = float(data_match.group(3))
                 rows.append([compiler, nodes, cores, batch_size, arrival_time, start_time, end_time])
 
     return pd.DataFrame(rows, columns=["compiler", "nodes", "cores", "batch_size", "arrival_time", "start_time", "end_time"])

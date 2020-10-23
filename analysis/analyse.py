@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 import numpy as np
 import statsmodels.api as sm
 
@@ -39,7 +40,23 @@ def perform_full_anova(data_frame):
 
 def compute_waiting_time(data_frame):
     """Compute the waiting time and service time from a sequence of job executions."""
-    return pd.DataFrame([], columns=["compiler", "waiting time", "service time"])
+
+    # Define trim function
+    def trim(data):
+        quarter = math.ceil(data.shape[0] / 4.0)
+        return data[quarter:-quarter].mean()
+
+    # Compute waiting and service times
+    data_frame["waiting_time"] = data_frame["start_time"] - data_frame["arrival_time"]
+    data_frame["service_time"] = data_frame["end_time"] - data_frame["start_time"]
+    data_frame = data_frame.drop(columns=["arrival_time", "start_time", "end_time"], index=1)
+
+    # Trim and average measurements
+    groups = data_frame.groupby(["compiler", "nodes", "cores", "batch_size"])
+    data_frame = groups.apply(func=trim)
+    data_frame.rename(columns={"waiting_time": "mean_waiting_time", "service_time": "mean_service_time"}, inplace=True)
+
+    return data_frame
 
 
 def main():
@@ -69,7 +86,6 @@ def main():
 
     # Store results
     results.to_csv(arguments.output)
-    print(results)
 
 
 if __name__ == '__main__':
