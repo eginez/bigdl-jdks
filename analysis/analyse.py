@@ -55,6 +55,7 @@ def compute_waiting_time(data_frame):
     groups = data_frame.groupby(["compiler", "nodes", "cores", "batch_size"])
     data_frame = groups.apply(func=trim)
     data_frame.rename(columns={"waiting_time": "mean_waiting_time", "service_time": "mean_service_time"}, inplace=True)
+    data_frame["mean_total_time"] = data_frame["mean_waiting_time"] + data_frame["mean_service_time"]
 
     return data_frame
 
