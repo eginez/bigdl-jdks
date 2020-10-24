@@ -1,6 +1,5 @@
 import pandas as pd
 import math
-import numpy as np
 import statsmodels.api as sm
 
 from argparse import ArgumentParser
@@ -60,13 +59,24 @@ def compute_waiting_time(data_frame):
     return data_frame
 
 
+def compute_cost(data_frame, cost):
+    """Compute the mean cost of running experiments via each compiler"""
+    data_frame = data_frame.groupby(["compiler", "nodes", "cores"]).tail(5)
+    data_frame["cost"] = data_frame["runtime"] * data_frame["nodes"] * data_frame["cores"] * cost
+    data_frame = data_frame.drop(columns=["nodes", "cores", "batch_size", "accuracy"], axis=1)
+    data_frame = data_frame.groupby("compiler").mean()
+    data_frame.rename(columns={"runtime": "mean_runtime", "cost": "mean_cost"}, inplace=True)
+    return data_frame
+
+
 def main():
     """Analysis the provided experiment results and quantify the effects of the factors"""
 
     # Parse arguments
     argument_parser = ArgumentParser()
-    argument_parser.add_argument("-t", "--type", required=True, choices=["effects", "anova", "full-anova", "queue"], help="type of analysis")
+    argument_parser.add_argument("-t", "--type", required=True, choices=["effects", "anova", "full-anova", "queue", "cost"], help="type of analysis")
     argument_parser.add_argument("-m", "--measurements", required=True, help="path to CSV file containing measurements")
+    argument_parser.add_argument("-c", "--cost", required=True, type=float, help="current cloud provider pricing per core per time unit")
     argument_parser.add_argument("-o", "--output", required=True, help="path to CSV output file")
     arguments = argument_parser.parse_args()
 
@@ -82,6 +92,10 @@ def main():
         results = perform_full_anova(data_frame)
     elif arguments.type == "queue":
         results = compute_waiting_time(data_frame)
+    elif arguments.type == "cost":
+        if not arguments.cost:
+            raise ValueError("Missing cost parameter")
+        results = compute_cost(data_frame, arguments.cost)
     else:
         raise ValueError(f"Invalid analysis type: {arguments.type}")
 
